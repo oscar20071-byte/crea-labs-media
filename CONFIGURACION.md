@@ -1,43 +1,47 @@
-# Configuración de Crea-Labs Media en Cloudflare (sin Firebase ni Supabase)
+# Configuración de Crea-Labs Community
 
-Esta guía usa los servicios de Cloudflare con sus cuotas gratuitas. No se puede prometer gratuidad ilimitada: hay límites de almacenamiento, solicitudes y operaciones.
+La aplicación fue convertida de una plataforma de vídeos a una plataforma de comunidades y chat inspirada en Discord. Esta versión utiliza Cloudflare Pages Functions y D1. **No necesita R2 ni almacenamiento de vídeos.**
 
-## 1. Crear el proyecto de Pages
-1. Inicia sesión en https://dash.cloudflare.com/.
-2. Abre **Workers & Pages → Create application → Pages → Connect to Git**.
-3. Conecta GitHub y selecciona `oscar20071-byte/crea-labs-media`.
-4. Deja el comando de compilación vacío y establece el directorio de salida como `/` o `.` según lo que acepte el panel.
-5. Crea el proyecto. La carpeta `functions/api` publica la API junto con la página.
+## 1. Despliegue
+El proyecto está conectado a GitHub y Cloudflare Pages. Los cambios de la rama principal se despliegan automáticamente. Configuración de Pages:
+- Build command: vacío.
+- Build output directory: `.`.
+- Functions: carpeta `functions/api`.
 
-## 2. Crear la base de datos D1
-1. En Cloudflare abre **Storage & databases → D1 SQL Database**.
-2. Crea una base de datos llamada `crea-labs-db`.
-3. Abre la consola SQL de esa base y ejecuta todo el contenido de `schema.sql`.
-4. En el proyecto Pages entra en **Settings → Functions → D1 database bindings**.
-5. Añade una vinculación con variable `DB` y selecciona `crea-labs-db`.
-6. Guarda y vuelve a desplegar Pages.
+## 2. Mantener la base de datos D1
+La base existente `crea-labs-db` y la vinculación `DB` se conservan. No borres la base de datos ni ejecutes instrucciones DROP.
 
-## 3. Crear el almacenamiento R2
-1. Abre **R2 Object Storage** y crea un bucket llamado `crea-labs-videos`.
-2. En tu proyecto Pages abre **Settings → Functions → R2 bucket bindings**.
-3. Añade una vinculación con variable `VIDEOS` y selecciona `crea-labs-videos`.
-4. Guarda y vuelve a desplegar Pages.
+Para añadir las tablas de comunidades:
+1. En Cloudflare abre **Storage & databases → D1 SQL Database → crea-labs-db**.
+2. Abre **Console**.
+3. En GitHub abre el archivo `migration_community.sql`.
+4. Copia todo su contenido y pégalo en la consola SQL de D1.
+5. Pulsa **Execute**. Deben crearse las tablas `guilds`, `guild_members`, `chat_channels` y `messages`.
 
-No hace falta hacer público el bucket: los vídeos se entregan mediante la API y la función comprueba que el vídeo exista en la base de datos.
+Esta migración es aditiva: no elimina las tablas ni los usuarios existentes.
 
-## 4. Probar la plataforma
-1. Abre la dirección `*.pages.dev` que Cloudflare asigne.
-2. Registra una cuenta con un correo tuyo y una contraseña única de al menos 10 caracteres.
-3. Pulsa **Subir vídeo**, completa título/categoría y elige un archivo de vídeo menor de 90 MB.
-4. Al terminar, el vídeo aparecerá en el inicio. Ábrelo para reproducir, dar like y comentar.
+## 3. Vinculación D1
+En el proyecto Pages comprueba **Settings → Functions → D1 database bindings**:
+- Variable: `DB`
+- Base de datos: `crea-labs-db`
 
-## Límites importantes del plan gratuito
-- R2 Standard: 10 GB-mes de almacenamiento, 1 millón de operaciones Class A y 10 millones Class B al mes.
-- Workers Free: 100.000 solicitudes por día y 10 ms de CPU por invocación.
-- Las solicitudes entrantes a Workers/Pages Functions en el plan Free tienen un máximo de cuerpo de 100 MB; la app limita cada vídeo a 90 MB.
-- D1 Free: hasta 500 MB por base de datos y 5 GB de almacenamiento total por cuenta, además de límites de lecturas/escrituras.
+No configures un bucket R2 para esta versión.
 
-Comprueba siempre los límites actuales en el panel de Cloudflare. No actives un plan de pago ni agregues un método de pago si quieres mantener el proyecto en el nivel gratuito.
+## 4. Primer uso
+1. Abre https://crea-labs-media.pages.dev/.
+2. Inicia sesión con tu cuenta existente o registra una nueva.
+3. La primera vez se crea automáticamente una comunidad inicial con el canal `#general`.
+4. Usa el botón **＋** de la barra izquierda para crear otros servidores.
+5. Usa el **＋** junto a CANALES DE TEXTO para añadir canales.
+6. Escribe en el cuadro inferior y pulsa Enter para enviar. Shift + Enter añade una nueva línea.
 
-## Lo que aún falta para una plataforma pública
-Esta versión es un MVP funcional, no un clon completo de YouTube. Antes de invitar a muchas personas hay que añadir moderación y reportes, recuperación de cuenta, límites anti-spam, administración, eliminación de vídeos/cuentas, miniaturas, transcodificación y carga reanudable para archivos grandes.
+## Funciones incluidas en esta primera versión
+- Registro e inicio/cierre de sesión.
+- Creación de servidores/comunidades.
+- Canales de texto.
+- Envío y lectura de mensajes.
+- Actualización automática de mensajes cada 4 segundos.
+- Interfaz adaptable a escritorio y móvil.
+
+## Funciones que todavía faltan
+Los mensajes directos, invitaciones para unirse a servidores, roles configurables, permisos detallados, subida de archivos, llamadas de voz/vídeo, notificaciones y moderación avanzada todavía no están implementados. La actualización automática usa consultas periódicas a D1; no es todavía una conexión WebSocket.
