@@ -16,14 +16,29 @@ function filterVideos(){
   $("videoGrid").querySelectorAll(".video-card").forEach(card=>card.addEventListener("click",()=>openVideo(card.dataset.id)));
 }
 async function loadVideos(){try{const data=await api("videos");state.videos=data.videos||[];filterVideos();}catch(e){$("videoGrid").innerHTML='<p class="muted">No se pudieron cargar los vídeos. Comprueba la configuración de Cloudflare.</p>';}}
-function showView(view){$("homeView").hidden=view!=="home";$("channelsView").hidden=view!=="channels";document.querySelectorAll(".sidebar [data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));}
+function showView(view){$("homeView").hidden=view!=="home";$("channelsView").hidden=view!=="channels";$("channelDetailView").hidden=view!=="channel";document.querySelectorAll(".sidebar [data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));}
 document.querySelectorAll(".chip").forEach(chip=>chip.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("selected"));chip.classList.add("selected");state.category=chip.dataset.category;filterVideos();}));
 document.querySelectorAll(".sidebar [data-category]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();state.category=a.dataset.category;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("selected",x.dataset.category===state.category));showView("home");filterVideos();}));
 $("searchForm").addEventListener("submit",e=>{e.preventDefault();filterVideos();});$("searchInput").addEventListener("input",filterVideos);
-document.querySelectorAll(".sidebar [data-view]").forEach(a=>a.addEventListener("click",async e=>{e.preventDefault();showView(a.dataset.view);if(a.dataset.view==="channels")await loadChannels();}));
-async function loadChannels(){try{const data=await api("channels");$("channelList").innerHTML=(data.channels||[]).map(c=>`<article class="channel-card"><div class="channel-avatar">${esc(c.name.slice(0,2).toUpperCase())}</div><div><h2>${esc(c.name)}</h2><p>${esc(c.description||"Canal de Crea-Labs Media")} · ${c.videos} vídeos</p></div></article>`).join("")||'<p class="muted">Todavía no hay canales.</p>';}catch(e){$("channelList").textContent=e.message;}}
+document.querySelectorAll(".sidebar [data-view]").forEach(a=>a.addEventListener("click",async e=>{e.preventDefault();showView(a.dataset.view);if(a.dataset.view==="channels")await loadChannels();}));$("myChannelNav").addEventListener("click",e=>{e.preventDefault();if(state.user)openChannel(state.user.id);});$("backChannels").addEventListener("click",()=>{showView("channels");loadChannels();});
+async function loadChannels(){
+  try{
+    const data=await api("channels");
+    $("channelList").innerHTML=(data.channels||[]).map(c=>'<article class="channel-card channel-click" data-channel="'+esc(c.id)+'"><div class="channel-avatar">'+esc(c.name.slice(0,2).toUpperCase())+'</div><div><h2>'+esc(c.name)+'</h2><p>'+esc(c.description||"Canal de Crea-Labs Media")+' · '+c.videos+' vídeos</p></div><span class="channel-open">Ver canal →</span></article>').join("")||'<p class="muted">Todavía no hay canales.</p>';
+    $("channelList").querySelectorAll("[data-channel]").forEach(card=>card.addEventListener("click",()=>openChannel(card.dataset.channel)));
+  }catch(e){$("channelList").textContent=e.message;}
+}
+function openChannel(id){
+  const card=document.querySelector('[data-channel="'+CSS.escape(id)+'"]');
+  const name=card?card.querySelector("h2").textContent:(state.user&&state.user.id===id?state.user.displayName:"Canal");
+  const videos=state.videos.filter(v=>v.channel_name===name||v.creator===name);
+  $("channelProfile").innerHTML='<div class="profile-avatar">'+esc(name.slice(0,2).toUpperCase())+'</div><div class="profile-copy"><h1>'+esc(name)+'</h1><p>Canal de Crea-Labs Media</p><small>'+videos.length+' vídeos en la lista actual</small></div>';
+  $("channelVideos").innerHTML=videos.map(v=>'<article class="video-card" data-id="'+esc(v.id)+'"><div class="thumbnail"><span class="play">▶</span><span class="duration">VÍDEO</span></div><div class="video-info"><div class="channel-avatar">'+esc(name.slice(0,2).toUpperCase())+'</div><div><h2>'+esc(v.title)+'</h2><p>'+esc(name)+'</p><p>'+Number(v.likes||0)+' likes · '+formatDate(v.created_at)+'</p></div></div></article>').join("")||'<p class="muted">Este canal todavía no tiene vídeos en la lista cargada.</p>';
+  $("channelVideos").querySelectorAll(".video-card").forEach(card=>card.addEventListener("click",()=>openVideo(card.dataset.id)));
+  showView("channel");
+}
 function authMode(){ $("authTitle").textContent=state.register?"Crear cuenta":"Iniciar sesión";$("authDescription").textContent=state.register?"Únete a Crea-Labs Media.":"Accede a tu cuenta."; $("authName").hidden=!state.register;$("authName").required=state.register;$("confirmWrap").hidden=!state.register;$("authConfirm").required=state.register;$("authSubmit").textContent=state.register?"Registrarme":"Iniciar sesión";$("authSwitch").textContent=state.register?"¿Ya tienes cuenta? Inicia sesión":"¿No tienes cuenta? Regístrate";$("authMessage").textContent="";}
-async function refreshUser(){try{const data=await api("auth/me");state.user=data.user;}catch{state.user=null;}$("authBtn").hidden=!!state.user;$("userAvatar").hidden=!state.user;$("userAvatar").textContent=state.user?(state.user.displayName||"CL").slice(0,2).toUpperCase():"CL";}
+async function refreshUser(){try{const data=await api("auth/me");state.user=data.user;}catch{state.user=null;}$("authBtn").hidden=!!state.user;$("userAvatar").hidden=!state.user;$("myChannelNav").hidden=!state.user;$("userAvatar").textContent=state.user?(state.user.displayName||"CL").slice(0,2).toUpperCase():"CL";}
 $("authBtn").addEventListener("click",()=>{state.register=false;authMode();$("authDialog").showModal();});
 $("authSwitch").addEventListener("click",()=>{state.register=!state.register;authMode();});
 $("authForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("authMessage"),password=$("authPassword").value;msg.textContent="";if(state.register&&password!==$("authConfirm").value){msg.textContent="Las contraseñas no coinciden.";return;}const btn=$("authSubmit");btn.disabled=true;try{await api(state.register?"auth/register":"auth/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:$("authEmail").value,password,displayName:$("authName").value})});$("authDialog").close();e.target.reset();await refreshUser();}catch(err){msg.textContent=err.message;}finally{btn.disabled=false;}});
