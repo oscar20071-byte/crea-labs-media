@@ -1,71 +1,12 @@
 <!doctype html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Crea-Labs Media: descubre y comparte vídeos.">
-  <title>Crea-Labs Media</title><link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<header class="topbar">
-  <button class="icon-btn" id="menuToggle" aria-label="Menú">☰</button>
-  <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">◈</span><span>CREA-LABS <b>MEDIA</b></span></a>
-  <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Buscar vídeos" aria-label="Buscar vídeos"><button type="submit">⌕</button></form>
-  <div class="top-actions"><button class="icon-btn notification-btn" id="notificationBtn" aria-label="Notificaciones" title="Notificaciones">♧</button><button class="upload-btn" id="uploadBtn">＋ <span>Crear</span></button><button class="auth-btn" id="authBtn">Iniciar sesión</button><button class="avatar profile-trigger" id="userAvatar" hidden aria-label="Abrir menú de cuenta" aria-expanded="false">CL</button><div class="profile-menu" id="profileMenu" hidden><div class="profile-menu-head"><div class="avatar menu-avatar" id="menuAvatar">CL</div><div><strong id="menuDisplayName">Tu cuenta</strong><small id="menuEmail"></small></div></div><div class="profile-menu-divider"></div><button class="profile-menu-item" id="menuYourChannel"><span>◉</span><span>Tu canal</span></button><button class="profile-menu-item" id="menuUpload"><span>＋</span><span>Subir vídeo</span></button><button class="profile-menu-item" id="menuAppearance"><span>◐</span><span>Apariencia: oscuro</span></button><div class="profile-menu-divider"></div><button class="profile-menu-item" id="menuSignOut"><span>↪</span><span>Cerrar sesión</span></button></div></div>
-</header>
-<aside class="sidebar" id="sidebar"><nav>
-  <a class="nav-item active" href="#" data-view="home"><span>⌂</span>Inicio</a>
-  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a><a class="nav-item" href="#my-channel" id="myChannelNav" hidden><span>◉</span>Mi canal</a><a class="nav-item" href="#studio" id="studioNav" hidden><span>▤</span>Studio</a>
-  <hr><p class="nav-heading">Explorar</p>
-  <a class="nav-item" href="#" data-category="Música"><span>♫</span>Música</a>
-  <a class="nav-item" href="#" data-category="Gaming"><span>🎮</span>Gaming</a>
-  <a class="nav-item" href="#" data-category="Deportes"><span>⚽</span>Deportes</a>
-  <a class="nav-item" href="#" data-category="Tecnología"><span>▦</span>Tecnología</a>
-  <a class="nav-item" href="#" data-category="Educación"><span>▤</span>Educación</a>
-</nav><div class="sidebar-foot">© 2026 Crea-Labs Media</div></aside>
-<main class="main-content">
-  <section id="homeView">
-    <div class="chips" id="categories">
-      <button class="chip selected" data-category="Todos">Todos</button><button class="chip" data-category="Música">Música</button><button class="chip" data-category="Gaming">Gaming</button><button class="chip" data-category="Deportes">Deportes</button><button class="chip" data-category="Tecnología">Tecnología</button><button class="chip" data-category="Educación">Educación</button><button class="chip" data-category="Entretenimiento">Entretenimiento</button><button class="chip" data-category="Otros">Otros</button>
-    </div>
-    <div class="video-grid" id="videoGrid"><p class="muted">Cargando vídeos...</p></div>
-    <p class="empty-state" id="emptyState" hidden>Aún no hay vídeos. ¡Sé el primero en publicar!</p>
-  </section>
-  <section id="studioView" hidden>
-    <div class="section-heading"><div><h1>Crea-Labs Studio</h1><p>Administra tus publicaciones y consulta el rendimiento de tu canal.</p></div><button class="primary-btn" id="studioUploadBtn">＋ Subir vídeo</button></div>
-    <div class="studio-stats" id="studioStats"></div><h2 class="studio-subtitle">Tu contenido</h2><div id="studioVideos" class="studio-video-list"><p class="muted">Cargando tu contenido...</p></div>
-  </section>
-  <section id="channelsView" hidden><div class="section-heading"><div><h1>Canales de Crea-Labs</h1><p>Descubre creadores de la comunidad.</p></div></div><div id="channelList" class="channel-list"><p class="muted">Cargando canales...</p></div></section>
-  <section id="channelDetailView" hidden><button class="text-btn" id="backChannels">← Volver a canales</button><div id="channelProfile" class="channel-profile"></div><h2>Vídeos del canal</h2><div id="channelVideos" class="video-grid"></div></section>
-  <footer class="mobile-footer">Crea-Labs Media · Comparte lo que creas</footer>
-</main>
-<dialog id="authDialog"><form class="dialog-content" id="authForm">
-  <button type="button" class="close-btn" data-close="authDialog">×</button><h2 id="authTitle">Iniciar sesión</h2><p id="authDescription">Accede a tu cuenta de Crea-Labs Media.</p>
-  <label>Nombre visible<input id="authName" maxlength="40" autocomplete="name" placeholder="Tu nombre" hidden></label>
-  <label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></label>
-  <label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" minlength="10" required placeholder="Mínimo 10 caracteres"></label>
-  <label id="confirmWrap" hidden>Confirmar contraseña<input id="authConfirm" type="password" minlength="10" autocomplete="new-password"></label>
-  <button class="primary-btn" id="authSubmit" type="submit">Iniciar sesión</button><button class="text-btn" type="button" id="authSwitch">¿No tienes cuenta? Regístrate</button><p class="form-message" id="authMessage" role="status"></p>
-</form></dialog>
-<dialog id="uploadDialog"><form class="dialog-content" id="uploadForm">
-  <button type="button" class="close-btn" data-close="uploadDialog">×</button><h2>Subir un vídeo</h2><p>Publica un vídeo real en Crea-Labs Media. Máximo 90 MB por archivo.</p>
-  <label>Título<input id="videoTitle" maxlength="100" required minlength="3" placeholder="Título del vídeo"></label>
-  <label>Descripción<textarea id="videoDescription" maxlength="1000" rows="3" placeholder="Cuéntanos de qué trata"></textarea></label>
-  <label>Categoría<select id="videoCategory"><option>Entretenimiento</option><option>Deportes</option><option>Música</option><option>Gaming</option><option>Tecnología</option><option>Educación</option><option>Otros</option></select></label>
-  <label>Archivo de vídeo<input id="videoFile" type="file" accept="video/*" required></label>
-  <div class="upload-progress" id="uploadProgress" hidden><div id="uploadProgressBar"></div></div>
-  <button class="primary-btn" id="uploadSubmit" type="submit">Publicar vídeo</button><p class="form-message" id="uploadMessage" role="status"></p>
-</form></dialog>
-<dialog id="editVideoDialog"><form class="dialog-content" id="editVideoForm">
-  <button type="button" class="close-btn" data-close="editVideoDialog">×</button><h2>Editar vídeo</h2>
-  <label>Título<input id="editVideoTitle" maxlength="100" minlength="3" required></label>
-  <label>Descripción<textarea id="editVideoDescription" maxlength="1000" rows="4"></textarea></label>
-  <label>Categoría<select id="editVideoCategory"><option>Entretenimiento</option><option>Deportes</option><option>Música</option><option>Gaming</option><option>Tecnología</option><option>Educación</option><option>Otros</option></select></label>
-  <button class="primary-btn" type="submit" id="editVideoSubmit">Guardar cambios</button><p class="form-message" id="editVideoMessage" role="status"></p>
-</form></dialog>
-<dialog id="playerDialog"><div class="dialog-content player-content">
-  <button type="button" class="close-btn" data-close="playerDialog">×</button><video id="player" controls playsinline></video>
-  <h2 id="playerTitle"></h2><div class="player-meta"><span id="playerChannel"></span><button id="likeBtn" class="like-btn">♡ <span id="likeCount">0</span></button></div>
-  <p id="playerDescription"></p><h3>Comentarios</h3><form id="commentForm"><textarea id="commentInput" rows="2" maxlength="500" placeholder="Escribe un comentario..." required></textarea><button class="primary-btn" type="submit">Comentar</button></form><div id="commentList" class="comment-list"></div>
-</div></dialog>
-<script src="app.js" defer></script>
-</body></html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#202225"><meta name="description" content="Crea-Labs Community: conecta, conversa y crea comunidades."><title>Crea-Labs Community</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="app-shell">
+<aside class="server-rail"><button class="server-logo active" id="homeServer" title="Inicio">CL</button><div class="rail-divider"></div><div id="serverRail" class="server-list"></div><button class="server-add" id="addServer" title="Crear servidor">＋</button></aside>
+<aside class="channel-sidebar"><header class="server-header"><button id="serverName" class="server-name">Crea-Labs Community</button><span class="server-chevron">⌄</span></header><div class="channel-scroll"><div class="channel-group"><div class="group-label">CANALES DE TEXTO <button id="addChannel" title="Crear canal">＋</button></div><div id="channelList"></div></div><div class="channel-group"><div class="group-label">MENSAJES DIRECTOS</div><div class="muted small">Próximamente</div></div></div><footer class="user-panel"><div class="user-avatar" id="userAvatar">CL</div><div class="user-meta"><strong id="userName">Invitado</strong><small id="userStatus">Conectado</small></div><button id="settingsBtn" title="Ajustes">⚙</button></footer></aside>
+<main class="chat-main"><header class="chat-header"><div class="channel-symbol">#</div><div class="chat-title"><strong id="activeChannelName">bienvenida</strong><span id="activeServerName">Crea-Labs Community</span></div><div class="header-actions"><button id="membersBtn" title="Miembros">♙</button><button id="loginBtn" class="login-btn">Iniciar sesión</button><button id="logoutBtn" class="login-btn" hidden>Cerrar sesión</button></div></header>
+<section class="welcome-banner" id="welcomeBanner"><div class="welcome-icon">✦</div><h1>¡Bienvenido a Crea-Labs Community!</h1><p>Tu espacio para conversar, compartir ideas y construir comunidades.</p></section><section class="messages" id="messages"><div class="message-empty">Selecciona un canal para empezar a conversar.</div></section>
+<form class="composer" id="messageForm"><button type="button" id="attachBtn" title="Adjuntar (próximamente)">＋</button><textarea id="messageInput" rows="1" maxlength="2000" placeholder="Inicia sesión para enviar mensajes..." disabled></textarea><button type="submit" id="sendBtn" disabled title="Enviar">➤</button></form><div class="composer-hint">Enter para enviar · Shift + Enter para nueva línea</div></main>
+<aside class="member-sidebar" id="memberSidebar"><div class="member-heading">MIEMBROS</div><div id="memberList" class="muted small">Los miembros aparecerán aquí.</div></aside></div>
+<dialog id="authDialog"><form id="authForm" class="modal"><button type="button" class="modal-close" data-close="authDialog">×</button><div class="modal-mark">CL</div><h2 id="authTitle">Bienvenido de nuevo</h2><p id="authDescription">Inicia sesión para entrar a tus comunidades.</p><label id="nameWrap" hidden>Nombre visible<input id="authName" maxlength="40" placeholder="Tu nombre"></label><label>Correo electrónico<input id="authEmail" type="email" required autocomplete="email" placeholder="correo@ejemplo.com"></label><label>Contraseña<input id="authPassword" type="password" required minlength="10" autocomplete="current-password" placeholder="Mínimo 10 caracteres"></label><label id="confirmWrap" hidden>Confirmar contraseña<input id="authConfirm" type="password" minlength="10"></label><button class="primary" id="authSubmit">Iniciar sesión</button><button type="button" class="switch-auth" id="authSwitch">¿No tienes cuenta? Regístrate</button><p id="authMessage" class="form-message"></p></form></dialog>
+<dialog id="createDialog"><form id="createForm" class="modal"><button type="button" class="modal-close" data-close="createDialog">×</button><h2 id="createTitle">Crear un servidor</h2><p id="createDescription">Dale un nombre a tu nueva comunidad.</p><label>Nombre<input id="createName" maxlength="60" minlength="2" required placeholder="Mi comunidad"></label><button class="primary" type="submit">Crear</button><p id="createMessage" class="form-message"></p></form></dialog>
+<script src="app.js" defer></script></body></html>
