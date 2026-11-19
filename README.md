@@ -1,15 +1,14 @@
 # Crea-Labs Media
 
-Plataforma de vídeos en desarrollo, con frontend HTML/CSS/JS y backend de Cloudflare Pages Functions + D1.
+Plataforma de vídeos en desarrollo con frontend HTML/CSS/JavaScript, alojamiento en Netlify y servicios de Firebase Authentication + Cloud Firestore.
 
-## Funciones
-- Interfaz de inicio, búsqueda y categorías.
+## Funciones actuales
+- Interfaz de inicio inspirada en plataformas de vídeo.
+- Búsqueda y filtros por categorías (contenido de demostración).
 - Registro e inicio de sesión.
-- Sesiones seguras mediante cookie HttpOnly.
 - Crear y descubrir canales.
-- Preparado para ampliarse con almacenamiento R2.
 
-## Configurar
-Sigue [CONFIGURACION.md](CONFIGURACION.md). Ejecuta [cloudflare/schema.sql](cloudflare/schema.sql) en D1 y enlaza la base de datos al proyecto Pages con la variable `DB`.
+## Configuración
+Sigue [CONFIGURACION.md](CONFIGURACION.md), completa los valores de [firebase-config.js](firebase-config.js) y publica las reglas de [firestore.rules](firestore.rules).
 
-La subida de vídeos todavía no está implementada. No se utiliza Supabase.
+La subida y reproducción de vídeos reales todavía no está implementada.
