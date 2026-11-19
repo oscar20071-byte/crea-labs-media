@@ -1,16 +1,15 @@
 # Crea-Labs Media
 
-Interfaz inicial de una plataforma de vídeos, con registro, inicio de sesión y creación de canales preparados para Supabase.
+Plataforma de vídeos en desarrollo, con frontend HTML/CSS/JS y backend de Cloudflare Pages Functions + D1.
 
-## Probar
-Abre el sitio publicado o ejecuta un servidor local estático. Para probar autenticación y canales debes configurar Supabase siguiendo CONFIGURACION.md.
+## Funciones
+- Interfaz de inicio, búsqueda y categorías.
+- Registro e inicio de sesión.
+- Sesiones seguras mediante cookie HttpOnly.
+- Crear y descubrir canales.
+- Preparado para ampliarse con almacenamiento R2.
 
-## Estado actual
-- Página de inicio, búsqueda y filtros de demostración.
-- Registro e inicio de sesión mediante Supabase Auth.
-- Creación y listado de canales mediante Supabase Database.
-- La subida de vídeos todavía no está habilitada; requiere almacenamiento, límites de tamaño y moderación.
-- Sin configuración de Supabase, la interfaz avisa y no simula cuentas reales.
+## Configurar
+Sigue [CONFIGURACION.md](CONFIGURACION.md). Ejecuta [cloudflare/schema.sql](cloudflare/schema.sql) en D1 y enlaza la base de datos al proyecto Pages con la variable `DB`.
 
-## Seguridad
-La clave anon/publishable de Supabase está diseñada para el cliente y debe protegerse con políticas RLS. Nunca coloques una clave service_role, contraseñas o tokens privados en el frontend ni en GitHub.
+La subida de vídeos todavía no está implementada. No se utiliza Supabase.
