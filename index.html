@@ -1,15 +1,59 @@
-<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Crea-Labs Media: descubre y comparte vídeos."><title>Crea-Labs Media</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="topbar"><button class="icon-btn" id="menuToggle" aria-label="Menú">☰</button><a class="brand" href="#"><span class="brand-mark">▶</span><span>Crea-Labs <b>Media</b></span></a><form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Buscar vídeos" aria-label="Buscar vídeos"><button type="submit">⌕</button></form><div class="top-actions"><button class="upload-btn" id="uploadBtn">＋ <span>Crear</span></button><button class="auth-btn" id="authBtn">Iniciar sesión</button><button class="avatar" id="userAvatar" hidden>CL</button></div></header>
-<aside class="sidebar" id="sidebar"><nav><a class="nav-item active" href="#" data-view="home"><span>⌂</span>Inicio</a><a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a><a class="nav-item" href="#subscriptions"><span>▤</span>Suscripciones</a><hr><p class="nav-heading">Explorar</p><a class="nav-item" href="#" data-category="Música">♫ Música</a><a class="nav-item" href="#" data-category="Gaming">🎮 Gaming</a><a class="nav-item" href="#" data-category="Deportes">⚽ Deportes</a><a class="nav-item" href="#" data-category="Tecnología">▦ Tecnología</a></nav><div class="sidebar-foot">© 2026 Crea-Labs Media</div></aside>
-<main class="main-content"><section id="homeView"><div class="chips" id="categories"><button class="chip selected" data-category="Todos">Todos</button><button class="chip" data-category="Música">Música</button><button class="chip" data-category="Gaming">Gaming</button><button class="chip" data-category="Deportes">Deportes</button><button class="chip" data-category="Tecnología">Tecnología</button><button class="chip" data-category="Educación">Educación</button><button class="chip" data-category="Entretenimiento">Entretenimiento</button></div><section class="video-grid" id="videoGrid">
-<article class="video-card" data-category="Deportes" data-title="Grandes momentos del fútbol"><div class="thumbnail thumb-football"><span class="play">▶</span><span class="duration">12:48</span></div><div class="video-info"><div class="channel-avatar">CD</div><div><h2>Grandes momentos del fútbol</h2><p>Canal Deportivo</p><p>125 mil visualizaciones · hace 2 días</p></div></div></article>
-<article class="video-card" data-category="Gaming" data-title="Construí una ciudad desde cero"><div class="thumbnail thumb-game"><span class="play">▶</span><span class="duration">18:32</span></div><div class="video-info"><div class="channel-avatar purple">GG</div><div><h2>Construí una ciudad desde cero</h2><p>GameZone</p><p>48 mil visualizaciones · hace 1 día</p></div></div></article>
-<article class="video-card" data-category="Tecnología" data-title="La tecnología que viene"><div class="thumbnail thumb-tech"><span class="play">▶</span><span class="duration">09:15</span></div><div class="video-info"><div class="channel-avatar green">TX</div><div><h2>La tecnología que viene</h2><p>Tech X</p><p>32 mil visualizaciones · hace 5 horas</p></div></div></article>
-<article class="video-card" data-category="Música" data-title="Sesión musical en vivo"><div class="thumbnail thumb-music"><span class="play">▶</span><span class="duration">24:06</span></div><div class="video-info"><div class="channel-avatar orange">MW</div><div><h2>Sesión musical en vivo</h2><p>Music World</p><p>210 mil visualizaciones · hace 4 días</p></div></div></article>
-<article class="video-card" data-category="Educación" data-title="Aprende algo nuevo en 10 minutos"><div class="thumbnail thumb-learn"><span class="play">▶</span><span class="duration">10:01</span></div><div class="video-info"><div class="channel-avatar teal">AP</div><div><h2>Aprende algo nuevo en 10 minutos</h2><p>Aprende Plus</p><p>17 mil visualizaciones · hace 3 días</p></div></div></article>
-<article class="video-card" data-category="Entretenimiento" data-title="Retos y diversión con amigos"><div class="thumbnail thumb-fun"><span class="play">▶</span><span class="duration">15:43</span></div><div class="video-info"><div class="channel-avatar pink">VF</div><div><h2>Retos y diversión con amigos</h2><p>Viral Fun</p><p>89 mil visualizaciones · hace 6 horas</p></div></div></article></section><p class="empty-state" id="emptyState" hidden>No encontramos vídeos con esa búsqueda.</p></section>
-<section id="channelsView" hidden><div class="section-heading"><div><h1>Canales de Crea-Labs</h1><p>Descubre creadores de la comunidad.</p></div><button class="primary-btn" id="createChannelBtn">＋ Crear mi canal</button></div><div id="channelList" class="channel-list"><p class="muted">Conecta el backend para ver canales.</p></div></section><footer class="mobile-footer">Crea-Labs Media · Proyecto en desarrollo</footer></main>
-<dialog id="authDialog"><form class="dialog-content" id="authForm"><button type="button" class="close-btn" data-close="authDialog">×</button><h2 id="authTitle">Iniciar sesión</h2><p id="authDescription">Accede a tu cuenta de Crea-Labs Media.</p><label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></label><label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="Mínimo 8 caracteres"></label><label id="confirmWrap" hidden>Confirmar contraseña<input id="authConfirm" type="password" minlength="8" autocomplete="new-password"></label><button class="primary-btn" id="authSubmit" type="submit">Iniciar sesión</button><button class="text-btn" type="button" id="authSwitch">¿No tienes cuenta? Regístrate</button><p class="form-message" id="authMessage" role="status"></p></form></dialog>
-<dialog id="channelDialog"><form class="dialog-content" id="channelForm"><button type="button" class="close-btn" data-close="channelDialog">×</button><h2>Crear mi canal</h2><p>Elige cómo se llamará tu espacio de creador.</p><label>Nombre del canal<input id="channelName" maxlength="40" required placeholder="Mi canal"></label><label>Descripción<input id="channelDescription" maxlength="160" placeholder="¿De qué trata tu canal?"></label><button class="primary-btn" type="submit">Crear canal</button><p class="form-message" id="channelMessage" role="status"></p></form></dialog>
-<dialog id="uploadDialog"><div class="dialog-content"><button type="button" class="close-btn" data-close="uploadDialog">×</button><h2>Publicar un vídeo</h2><p>La subida de vídeos se habilitará después de conectar el almacenamiento.</p><button class="primary-btn" type="button" data-close="uploadDialog">Entendido</button></div></dialog>
-<script type="module" src="app.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Crea-Labs Media: descubre y comparte vídeos.">
+  <title>Crea-Labs Media</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn" id="menuToggle" aria-label="Menú">☰</button>
+  <a class="brand" href="#"><span class="brand-mark">▶</span><span>Crea-Labs <b>Media</b></span></a>
+  <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Buscar vídeos" aria-label="Buscar vídeos"><button type="submit">⌕</button></form>
+  <div class="top-actions"><button class="upload-btn" id="uploadBtn">＋ <span>Subir vídeo</span></button><button class="auth-btn" id="authBtn">Iniciar sesión</button><button class="avatar" id="userAvatar" hidden title="Cerrar sesión">CL</button></div>
+</header>
+<aside class="sidebar" id="sidebar"><nav>
+  <a class="nav-item active" href="#" data-view="home"><span>⌂</span>Inicio</a>
+  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a>
+  <hr><p class="nav-heading">Explorar</p>
+  <a class="nav-item" href="#" data-category="Música"><span>♫</span>Música</a>
+  <a class="nav-item" href="#" data-category="Gaming"><span>🎮</span>Gaming</a>
+  <a class="nav-item" href="#" data-category="Deportes"><span>⚽</span>Deportes</a>
+  <a class="nav-item" href="#" data-category="Tecnología"><span>▦</span>Tecnología</a>
+  <a class="nav-item" href="#" data-category="Educación"><span>▤</span>Educación</a>
+</nav><div class="sidebar-foot">© 2026 Crea-Labs Media</div></aside>
+<main class="main-content">
+  <section id="homeView">
+    <div class="chips" id="categories">
+      <button class="chip selected" data-category="Todos">Todos</button><button class="chip" data-category="Música">Música</button><button class="chip" data-category="Gaming">Gaming</button><button class="chip" data-category="Deportes">Deportes</button><button class="chip" data-category="Tecnología">Tecnología</button><button class="chip" data-category="Educación">Educación</button><button class="chip" data-category="Entretenimiento">Entretenimiento</button><button class="chip" data-category="Otros">Otros</button>
+    </div>
+    <div class="video-grid" id="videoGrid"><p class="muted">Cargando vídeos...</p></div>
+    <p class="empty-state" id="emptyState" hidden>Aún no hay vídeos. ¡Sé el primero en publicar!</p>
+  </section>
+  <section id="channelsView" hidden><div class="section-heading"><div><h1>Canales de Crea-Labs</h1><p>Descubre creadores de la comunidad.</p></div></div><div id="channelList" class="channel-list"><p class="muted">Cargando canales...</p></div></section>
+  <footer class="mobile-footer">Crea-Labs Media · Comparte lo que creas</footer>
+</main>
+<dialog id="authDialog"><form class="dialog-content" id="authForm">
+  <button type="button" class="close-btn" data-close="authDialog">×</button><h2 id="authTitle">Iniciar sesión</h2><p id="authDescription">Accede a tu cuenta de Crea-Labs Media.</p>
+  <label>Nombre visible<input id="authName" maxlength="40" autocomplete="name" placeholder="Tu nombre" hidden></label>
+  <label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></label>
+  <label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" minlength="10" required placeholder="Mínimo 10 caracteres"></label>
+  <label id="confirmWrap" hidden>Confirmar contraseña<input id="authConfirm" type="password" minlength="10" autocomplete="new-password"></label>
+  <button class="primary-btn" id="authSubmit" type="submit">Iniciar sesión</button><button class="text-btn" type="button" id="authSwitch">¿No tienes cuenta? Regístrate</button><p class="form-message" id="authMessage" role="status"></p>
+</form></dialog>
+<dialog id="uploadDialog"><form class="dialog-content" id="uploadForm">
+  <button type="button" class="close-btn" data-close="uploadDialog">×</button><h2>Subir un vídeo</h2><p>Publica un vídeo real en Crea-Labs Media. Máximo 90 MB por archivo.</p>
+  <label>Título<input id="videoTitle" maxlength="100" required minlength="3" placeholder="Título del vídeo"></label>
+  <label>Descripción<textarea id="videoDescription" maxlength="1000" rows="3" placeholder="Cuéntanos de qué trata"></textarea></label>
+  <label>Categoría<select id="videoCategory"><option>Entretenimiento</option><option>Deportes</option><option>Música</option><option>Gaming</option><option>Tecnología</option><option>Educación</option><option>Otros</option></select></label>
+  <label>Archivo de vídeo<input id="videoFile" type="file" accept="video/*" required></label>
+  <div class="upload-progress" id="uploadProgress" hidden><div id="uploadProgressBar"></div></div>
+  <button class="primary-btn" id="uploadSubmit" type="submit">Publicar vídeo</button><p class="form-message" id="uploadMessage" role="status"></p>
+</form></dialog>
+<dialog id="playerDialog"><div class="dialog-content player-content">
+  <button type="button" class="close-btn" data-close="playerDialog">×</button><video id="player" controls playsinline></video>
+  <h2 id="playerTitle"></h2><div class="player-meta"><span id="playerChannel"></span><button id="likeBtn" class="like-btn">♡ <span id="likeCount">0</span></button></div>
+  <p id="playerDescription"></p><h3>Comentarios</h3><form id="commentForm"><textarea id="commentInput" rows="2" maxlength="500" placeholder="Escribe un comentario..." required></textarea><button class="primary-btn" type="submit">Comentar</button></form><div id="commentList" class="comment-list"></div>
+</div></dialog>
+<script src="app.js" defer></script>
+</body></html>
