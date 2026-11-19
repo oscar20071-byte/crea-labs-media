@@ -14,7 +14,7 @@
 </header>
 <aside class="sidebar" id="sidebar"><nav>
   <a class="nav-item active" href="#" data-view="home"><span>⌂</span>Inicio</a>
-  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a><a class="nav-item" href="#my-channel" id="myChannelNav" hidden><span>◉</span>Mi canal</a>
+  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a><a class="nav-item" href="#my-channel" id="myChannelNav" hidden><span>◉</span>Mi canal</a><a class="nav-item" href="#studio" id="studioNav" hidden><span>▤</span>Studio</a>
   <hr><p class="nav-heading">Explorar</p>
   <a class="nav-item" href="#" data-category="Música"><span>♫</span>Música</a>
   <a class="nav-item" href="#" data-category="Gaming"><span>🎮</span>Gaming</a>
@@ -29,6 +29,10 @@
     </div>
     <div class="video-grid" id="videoGrid"><p class="muted">Cargando vídeos...</p></div>
     <p class="empty-state" id="emptyState" hidden>Aún no hay vídeos. ¡Sé el primero en publicar!</p>
+  </section>
+  <section id="studioView" hidden>
+    <div class="section-heading"><div><h1>Crea-Labs Studio</h1><p>Administra tus publicaciones y consulta el rendimiento de tu canal.</p></div><button class="primary-btn" id="studioUploadBtn">＋ Subir vídeo</button></div>
+    <div class="studio-stats" id="studioStats"></div><h2 class="studio-subtitle">Tu contenido</h2><div id="studioVideos" class="studio-video-list"><p class="muted">Cargando tu contenido...</p></div>
   </section>
   <section id="channelsView" hidden><div class="section-heading"><div><h1>Canales de Crea-Labs</h1><p>Descubre creadores de la comunidad.</p></div></div><div id="channelList" class="channel-list"><p class="muted">Cargando canales...</p></div></section>
   <section id="channelDetailView" hidden><button class="text-btn" id="backChannels">← Volver a canales</button><div id="channelProfile" class="channel-profile"></div><h2>Vídeos del canal</h2><div id="channelVideos" class="video-grid"></div></section>
@@ -50,6 +54,13 @@
   <label>Archivo de vídeo<input id="videoFile" type="file" accept="video/*" required></label>
   <div class="upload-progress" id="uploadProgress" hidden><div id="uploadProgressBar"></div></div>
   <button class="primary-btn" id="uploadSubmit" type="submit">Publicar vídeo</button><p class="form-message" id="uploadMessage" role="status"></p>
+</form></dialog>
+<dialog id="editVideoDialog"><form class="dialog-content" id="editVideoForm">
+  <button type="button" class="close-btn" data-close="editVideoDialog">×</button><h2>Editar vídeo</h2>
+  <label>Título<input id="editVideoTitle" maxlength="100" minlength="3" required></label>
+  <label>Descripción<textarea id="editVideoDescription" maxlength="1000" rows="4"></textarea></label>
+  <label>Categoría<select id="editVideoCategory"><option>Entretenimiento</option><option>Deportes</option><option>Música</option><option>Gaming</option><option>Tecnología</option><option>Educación</option><option>Otros</option></select></label>
+  <button class="primary-btn" type="submit" id="editVideoSubmit">Guardar cambios</button><p class="form-message" id="editVideoMessage" role="status"></p>
 </form></dialog>
 <dialog id="playerDialog"><div class="dialog-content player-content">
   <button type="button" class="close-btn" data-close="playerDialog">×</button><video id="player" controls playsinline></video>
