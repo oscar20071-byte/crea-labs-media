@@ -52,7 +52,7 @@ async function authRoutes(request,env,path){
     await env.DB.prepare("INSERT INTO channels (id,owner_id,name,description,created_at) VALUES (?,?,?,?,?)").bind(id,id,displayName,"Canal de "+displayName,Date.now()).run();
     const token=bytesToHex(crypto.getRandomValues(new Uint8Array(32)));
     await env.DB.prepare("INSERT INTO sessions (token_hash,user_id,expires_at) VALUES (?,?,?)").bind(await digest(token),id,Date.now()+SESSION_SECONDS*1000).run();
-    return json({user:{id,email,displayName}},{status:201,headers:{"set-cookie":sessionCookie(token)}});
+    return json({user:{id,email,displayName}},201,{"set-cookie":sessionCookie(token)});
   }
   if(path==="auth/login" && request.method==="POST"){
     const body=await request.json().catch(()=>null);
@@ -61,7 +61,7 @@ async function authRoutes(request,env,path){
     if(!user || await passwordHash(password,user.password_salt)!==user.password_hash) return fail("Correo o contraseña incorrectos.",401);
     const token=bytesToHex(crypto.getRandomValues(new Uint8Array(32)));
     await env.DB.prepare("INSERT INTO sessions (token_hash,user_id,expires_at) VALUES (?,?,?)").bind(await digest(token),user.id,Date.now()+SESSION_SECONDS*1000).run();
-    return json({user:safeUser(user)},{headers:{"set-cookie":sessionCookie(token)}});
+    return json({user:safeUser(user)},200,{"set-cookie":sessionCookie(token)});
   }
   if(path==="auth/logout" && request.method==="POST"){
     const token=cookie(request,SESSION_COOKIE);
