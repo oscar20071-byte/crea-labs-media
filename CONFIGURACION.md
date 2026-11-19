@@ -1,35 +1,43 @@
-# Configuración de Crea-Labs Media (Netlify + Firebase)
+# Configuración de Crea-Labs Media en Cloudflare (sin Firebase ni Supabase)
 
-Esta versión usa **Netlify** para publicar la web y **Firebase Authentication + Cloud Firestore** para las cuentas y los canales. No usa Supabase ni Cloudflare.
+Esta guía usa los servicios de Cloudflare con sus cuotas gratuitas. No se puede prometer gratuidad ilimitada: hay límites de almacenamiento, solicitudes y operaciones.
 
-## 1. Crear el proyecto Firebase
-1. Abre https://console.firebase.google.com/ e inicia un proyecto.
-2. En **Authentication → Get started → Sign-in method**, activa **Email/Password**.
-3. En **Firestore Database**, crea una base de datos. Para comenzar, elige el modo de producción.
-4. En **Project settings → General → Your apps**, añade una aplicación web y copia la configuración que Firebase muestra.
+## 1. Crear el proyecto de Pages
+1. Inicia sesión en https://dash.cloudflare.com/.
+2. Abre **Workers & Pages → Create application → Pages → Connect to Git**.
+3. Conecta GitHub y selecciona `oscar20071-byte/crea-labs-media`.
+4. Deja el comando de compilación vacío y establece el directorio de salida como `/` o `.` según lo que acepte el panel.
+5. Crea el proyecto. La carpeta `functions/api` publica la API junto con la página.
 
-## 2. Poner la configuración web
-Abre `firebase-config.js` en GitHub y sustituye:
-- `REEMPLAZAR_API_KEY` por `apiKey`.
-- `REEMPLAZAR_PROJECT_ID` por el ID de tu proyecto (en los dos lugares).
-- `REEMPLAZAR_APP_ID` por `appId`.
+## 2. Crear la base de datos D1
+1. En Cloudflare abre **Storage & databases → D1 SQL Database**.
+2. Crea una base de datos llamada `crea-labs-db`.
+3. Abre la consola SQL de esa base y ejecuta todo el contenido de `schema.sql`.
+4. En el proyecto Pages entra en **Settings → Functions → D1 database bindings**.
+5. Añade una vinculación con variable `DB` y selecciona `crea-labs-db`.
+6. Guarda y vuelve a desplegar Pages.
 
-La configuración web de Firebase identifica el proyecto y no es una contraseña. Nunca publiques contraseñas, claves privadas ni archivos de cuenta de servicio.
+## 3. Crear el almacenamiento R2
+1. Abre **R2 Object Storage** y crea un bucket llamado `crea-labs-videos`.
+2. En tu proyecto Pages abre **Settings → Functions → R2 bucket bindings**.
+3. Añade una vinculación con variable `VIDEOS` y selecciona `crea-labs-videos`.
+4. Guarda y vuelve a desplegar Pages.
 
-## 3. Publicar las reglas de Firestore
-En Firebase Console → Firestore Database → Rules, pega el contenido de `firestore.rules` y pulsa **Publish**. Estas reglas permiten leer canales públicos y que cada cuenta gestione únicamente su propio canal.
+No hace falta hacer público el bucket: los vídeos se entregan mediante la API y la función comprueba que el vídeo exista en la base de datos.
 
-## 4. Publicar en Netlify
-1. Abre https://app.netlify.com/ y elige **Add new project → Import an existing project**.
-2. Conecta GitHub y selecciona `oscar20071-byte/crea-labs-media`.
-3. Deja el comando de build vacío y el directorio de publicación como `.` (punto).
-4. Pulsa **Deploy**. Netlify volverá a publicar automáticamente cuando actualices el repositorio.
+## 4. Probar la plataforma
+1. Abre la dirección `*.pages.dev` que Cloudflare asigne.
+2. Registra una cuenta con un correo tuyo y una contraseña única de al menos 10 caracteres.
+3. Pulsa **Subir vídeo**, completa título/categoría y elige un archivo de vídeo menor de 90 MB.
+4. Al terminar, el vídeo aparecerá en el inicio. Ábrelo para reproducir, dar like y comentar.
 
-## Qué funciona y qué falta
-- La página, la búsqueda y las categorías.
-- Registro e inicio de sesión por correo.
-- Crear y descubrir canales con Firestore.
-- La subida y reproducción real de vídeos todavía no está implementada. No uses Firebase Storage para esta primera versión sin revisar antes la facturación: los nuevos buckets requieren el plan Blaze, aunque exista una cuota sin coste. No añadas un método de pago para seguir esta guía.
+## Límites importantes del plan gratuito
+- R2 Standard: 10 GB-mes de almacenamiento, 1 millón de operaciones Class A y 10 millones Class B al mes.
+- Workers Free: 100.000 solicitudes por día y 10 ms de CPU por invocación.
+- Las solicitudes entrantes a Workers/Pages Functions en el plan Free tienen un máximo de cuerpo de 100 MB; la app limita cada vídeo a 90 MB.
+- D1 Free: hasta 500 MB por base de datos y 5 GB de almacenamiento total por cuenta, además de límites de lecturas/escrituras.
 
-## Coste
-Netlify ofrece un plan gratuito con límites mensuales. Firebase ofrece Authentication y cuotas gratuitas de Firestore. Si la web supera las cuotas, puede dejar de funcionar o requerir otro plan; revisa los límites antes de abrirla al público.
+Comprueba siempre los límites actuales en el panel de Cloudflare. No actives un plan de pago ni agregues un método de pago si quieres mantener el proyecto en el nivel gratuito.
+
+## Lo que aún falta para una plataforma pública
+Esta versión es un MVP funcional, no un clon completo de YouTube. Antes de invitar a muchas personas hay que añadir moderación y reportes, recuperación de cuenta, límites anti-spam, administración, eliminación de vídeos/cuentas, miniaturas, transcodificación y carga reanudable para archivos grandes.
