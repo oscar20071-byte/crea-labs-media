@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users (
+ id TEXT PRIMARY KEY,
+ email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+ password_hash TEXT NOT NULL,
+ password_salt TEXT NOT NULL,
+ created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sessions (
+ token_hash TEXT PRIMARY KEY,
+ user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions(expires_at);
+CREATE TABLE IF NOT EXISTS channels (
+ id TEXT PRIMARY KEY,
+ user_id TEXT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+ name TEXT NOT NULL CHECK(length(name) BETWEEN 2 AND 40),
+ description TEXT NOT NULL DEFAULT '' CHECK(length(description)<=160),
+ created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS channels_created_idx ON channels(created_at DESC);
