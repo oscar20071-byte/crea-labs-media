@@ -71,6 +71,11 @@ async function authRoutes(request,env,path){
   return null;
 }
 async function videoRoutes(request,env,path){
+  if(path==="studio/videos" && request.method==="GET"){
+    const user=await requireUser(request,env); if(!user) return fail("Inicia sesión para abrir Studio.",401);
+    const rows=await env.DB.prepare("SELECT v.id,v.title,v.description,v.category,v.size,v.created_at,(SELECT COUNT(*) FROM likes l WHERE l.video_id=v.id) AS likes,(SELECT COUNT(*) FROM comments c WHERE c.video_id=v.id) AS comments FROM videos v WHERE v.owner_id=? ORDER BY v.created_at DESC LIMIT 200").bind(user.id).all();
+    return json({videos:rows.results||[]});
+  }
   if(path==="videos" && request.method==="GET"){
     const rows=await env.DB.prepare("SELECT v.id,v.title,v.description,v.category,v.size,v.created_at,u.display_name AS creator,c.name AS channel_name,(SELECT COUNT(*) FROM likes l WHERE l.video_id=v.id) AS likes,(SELECT COUNT(*) FROM comments cm WHERE cm.video_id=v.id) AS comments FROM videos v JOIN users u ON u.id=v.owner_id LEFT JOIN channels c ON c.id=v.channel_id WHERE v.status='published' ORDER BY v.created_at DESC LIMIT 100").all();
     return json({videos:(rows.results||[]).map(v=>({...v,streamUrl:"/api/stream/"+v.id}))});
