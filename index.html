@@ -14,7 +14,7 @@
 </header>
 <aside class="sidebar" id="sidebar"><nav>
   <a class="nav-item active" href="#" data-view="home"><span>⌂</span>Inicio</a>
-  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a>
+  <a class="nav-item" href="#channels" data-view="channels"><span>▣</span>Canales</a><a class="nav-item" href="#my-channel" id="myChannelNav" hidden><span>◉</span>Mi canal</a>
   <hr><p class="nav-heading">Explorar</p>
   <a class="nav-item" href="#" data-category="Música"><span>♫</span>Música</a>
   <a class="nav-item" href="#" data-category="Gaming"><span>🎮</span>Gaming</a>
@@ -31,6 +31,7 @@
     <p class="empty-state" id="emptyState" hidden>Aún no hay vídeos. ¡Sé el primero en publicar!</p>
   </section>
   <section id="channelsView" hidden><div class="section-heading"><div><h1>Canales de Crea-Labs</h1><p>Descubre creadores de la comunidad.</p></div></div><div id="channelList" class="channel-list"><p class="muted">Cargando canales...</p></div></section>
+  <section id="channelDetailView" hidden><button class="text-btn" id="backChannels">← Volver a canales</button><div id="channelProfile" class="channel-profile"></div><h2>Vídeos del canal</h2><div id="channelVideos" class="video-grid"></div></section>
   <footer class="mobile-footer">Crea-Labs Media · Comparte lo que creas</footer>
 </main>
 <dialog id="authDialog"><form class="dialog-content" id="authForm">
