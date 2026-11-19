@@ -66,7 +66,7 @@ async function authRoutes(request,env,path){
   if(path==="auth/logout" && request.method==="POST"){
     const token=cookie(request,SESSION_COOKIE);
     if(token) await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(token)).run();
-    return json({ok:true},{headers:{"set-cookie":clearCookie()}});
+    return json({ok:true},200,{"set-cookie":clearCookie()});
   }
   return null;
 }
