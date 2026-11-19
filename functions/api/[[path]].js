@@ -120,6 +120,24 @@ async function videoRoutes(request,env,path){
     headers["content-length"]=String(video.size);
     return new Response(object.body,{headers});
   }
+  const manageMatch=/^videos\/([^/]+)$/.exec(path);
+  if(manageMatch && (request.method==="PATCH" || request.method==="DELETE")){
+    const user=await requireUser(request,env); if(!user) return fail("Inicia sesión para gestionar vídeos.",401);
+    const video=await env.DB.prepare("SELECT id,object_key FROM videos WHERE id=? AND owner_id=?").bind(manageMatch[1],user.id).first();
+    if(!video) return fail("Vídeo no encontrado o no tienes permiso.",404);
+    if(request.method==="DELETE"){
+      await env.DB.prepare("DELETE FROM videos WHERE id=? AND owner_id=?").bind(video.id,user.id).run();
+      await env.VIDEOS.delete(video.object_key);
+      return json({ok:true});
+    }
+    const body=await request.json().catch(()=>null); if(!body) return fail("Datos no válidos.");
+    const title=String(body.title||"").trim(),description=String(body.description||"").trim(),category=String(body.category||"Otros");
+    if(title.length<3||title.length>100) return fail("El título debe tener entre 3 y 100 caracteres.");
+    if(description.length>1000) return fail("La descripción no puede superar 1000 caracteres.");
+    if(!CATEGORIES.includes(category)) return fail("Categoría no válida.");
+    await env.DB.prepare("UPDATE videos SET title=?,description=?,category=? WHERE id=? AND owner_id=?").bind(title,description,category,video.id,user.id).run();
+    return json({ok:true});
+  }
   const likeMatch=/^videos\/([^/]+)\/like$/.exec(path);
   if(likeMatch && request.method==="POST"){
     const user=await requireUser(request,env); if(!user) return fail("Inicia sesión para dar like.",401);
