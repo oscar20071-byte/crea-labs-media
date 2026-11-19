@@ -1,33 +1,35 @@
-# Configuración de Crea-Labs Media con Cloudflare (sin Supabase)
+# Configuración de Crea-Labs Media (Netlify + Firebase)
 
-La aplicación usa Cloudflare Pages Functions como API y Cloudflare D1 como base de datos. No utiliza Supabase.
+Esta versión usa **Netlify** para publicar la web y **Firebase Authentication + Cloud Firestore** para las cuentas y los canales. No usa Supabase ni Cloudflare.
 
-## 1. Crear la base de datos D1
-1. Abre https://dash.cloudflare.com/ y entra en **Workers & Pages → D1 SQL Database**.
-2. Crea una base de datos llamada `crea-labs-db`.
-3. Abre la base de datos y ejecuta el SQL del archivo `cloudflare/schema.sql`.
+## 1. Crear el proyecto Firebase
+1. Abre https://console.firebase.google.com/ e inicia un proyecto.
+2. En **Authentication → Get started → Sign-in method**, activa **Email/Password**.
+3. En **Firestore Database**, crea una base de datos. Para comenzar, elige el modo de producción.
+4. En **Project settings → General → Your apps**, añade una aplicación web y copia la configuración que Firebase muestra.
 
-## 2. Conectar D1 con Pages
-1. En Cloudflare, abre **Workers & Pages** y selecciona tu proyecto Pages.
-2. Ve a **Settings → Bindings → Add → D1 database**.
-3. En **Variable name** escribe exactamente `DB`.
-4. Selecciona la base `crea-labs-db`, guarda y vuelve a desplegar el proyecto.
+## 2. Poner la configuración web
+Abre `firebase-config.js` en GitHub y sustituye:
+- `REEMPLAZAR_API_KEY` por `apiKey`.
+- `REEMPLAZAR_PROJECT_ID` por el ID de tu proyecto (en los dos lugares).
+- `REEMPLAZAR_APP_ID` por `appId`.
 
-La función de servidor está en `functions/api/[[path]].js`. Pages Functions usa rutas basadas en archivos; la carpeta functions debe estar en la raíz del proyecto.
+La configuración web de Firebase identifica el proyecto y no es una contraseña. Nunca publiques contraseñas, claves privadas ni archivos de cuenta de servicio.
 
-## 3. Publicar en Cloudflare Pages
-1. Entra a **Workers & Pages → Create → Pages → Connect to Git**.
+## 3. Publicar las reglas de Firestore
+En Firebase Console → Firestore Database → Rules, pega el contenido de `firestore.rules` y pulsa **Publish**. Estas reglas permiten leer canales públicos y que cada cuenta gestione únicamente su propio canal.
+
+## 4. Publicar en Netlify
+1. Abre https://app.netlify.com/ y elige **Add new project → Import an existing project**.
 2. Conecta GitHub y selecciona `oscar20071-byte/crea-labs-media`.
-3. Para este sitio HTML estático, deja el comando de compilación vacío y usa `/` como directorio de salida.
-4. Despliega. Después configura el binding D1 descrito arriba y vuelve a desplegar.
+3. Deja el comando de build vacío y el directorio de publicación como `.` (punto).
+4. Pulsa **Deploy**. Netlify volverá a publicar automáticamente cuando actualices el repositorio.
 
-## Funciones preparadas
-- Registro e inicio de sesión con contraseñas derivadas con PBKDF2.
-- Sesiones con cookies HttpOnly, Secure y SameSite.
-- Crear un canal por cuenta y listar canales públicos.
-- Consultas SQL parametrizadas.
+## Qué funciona y qué falta
+- La página, la búsqueda y las categorías.
+- Registro e inicio de sesión por correo.
+- Crear y descubrir canales con Firestore.
+- La subida y reproducción real de vídeos todavía no está implementada. No uses Firebase Storage para esta primera versión sin revisar antes la facturación: los nuevos buckets requieren el plan Blaze, aunque exista una cuota sin coste. No añadas un método de pago para seguir esta guía.
 
-## Importante
-- No hay claves de Supabase ni servicios externos de autenticación.
-- La subida de vídeos todavía no está implementada; R2 será la opción de almacenamiento de objetos para esa etapa.
-- El proyecto de Pages debe tener D1 enlazado con el nombre de variable `DB`. Sin ese binding, la API responde con un aviso de configuración.
+## Coste
+Netlify ofrece un plan gratuito con límites mensuales. Firebase ofrece Authentication y cuotas gratuitas de Firestore. Si la web supera las cuotas, puede dejar de funcionar o requerir otro plan; revisa los límites antes de abrirla al público.
