@@ -1,15 +1,16 @@
 # Crea-Labs Media
 
-Primera versión de la interfaz de una plataforma de vídeos.
+Interfaz inicial de una plataforma de vídeos, con registro, inicio de sesión y creación de canales preparados para Supabase.
 
-## Probar localmente
-Abre `index.html` en tu navegador. No necesita instalación.
+## Probar
+Abre el sitio publicado o ejecuta un servidor local estático. Para probar autenticación y canales debes configurar Supabase siguiendo CONFIGURACION.md.
 
-## Publicar con GitHub Pages
-1. Abre **Settings → Pages** en este repositorio.
-2. En **Build and deployment**, selecciona **Deploy from a branch**.
-3. Elige la rama `main` y la carpeta `/ (root)`.
-4. Guarda y espera a que GitHub publique el sitio.
+## Estado actual
+- Página de inicio, búsqueda y filtros de demostración.
+- Registro e inicio de sesión mediante Supabase Auth.
+- Creación y listado de canales mediante Supabase Database.
+- La subida de vídeos todavía no está habilitada; requiere almacenamiento, límites de tamaño y moderación.
+- Sin configuración de Supabase, la interfaz avisa y no simula cuentas reales.
 
-## Estado
-Prototipo frontend. Incluye página de inicio, tarjetas de demostración, filtros por categoría y búsqueda. El registro, subida real de vídeos, comentarios, cuentas y canales requieren backend y almacenamiento, que se añadirán en etapas posteriores.
+## Seguridad
+La clave anon/publishable de Supabase está diseñada para el cliente y debe protegerse con políticas RLS. Nunca coloques una clave service_role, contraseñas o tokens privados en el frontend ni en GitHub.
