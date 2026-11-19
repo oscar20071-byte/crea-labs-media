@@ -169,6 +169,70 @@ async function channelRoutes(request,env,path){
   }
   return null;
 }
+
+async function communityRoutes(request,env,path){
+  const user=await currentUser(request,env);
+  if(path.startsWith("community/") && !user) return fail("Inicia sesión para usar las comunidades.",401);
+  if(path==="community/servers" && request.method==="GET"){
+    let rows=await env.DB.prepare("SELECT g.id,g.name,g.owner_id,m.role FROM guild_members m JOIN guilds g ON g.id=m.guild_id WHERE m.user_id=? ORDER BY g.created_at").bind(user.id).all();
+    if(!rows.results?.length){
+      const id=crypto.randomUUID(),channelId=crypto.randomUUID(),now=Date.now();
+      await env.DB.batch([
+        env.DB.prepare("INSERT INTO guilds (id,name,owner_id,created_at) VALUES (?,?,?,?)").bind(id,"Mi comunidad",user.id,now),
+        env.DB.prepare("INSERT INTO guild_members (guild_id,user_id,role,joined_at) VALUES (?,?,?,?)").bind(id,user.id,"owner",now),
+        env.DB.prepare("INSERT INTO chat_channels (id,guild_id,name,channel_type,position,created_at) VALUES (?,?,?,?,?,?)").bind(channelId,id,"general","text",0,now)
+      ]);
+      rows=await env.DB.prepare("SELECT g.id,g.name,g.owner_id,m.role FROM guild_members m JOIN guilds g ON g.id=m.guild_id WHERE m.user_id=? ORDER BY g.created_at").bind(user.id).all();
+    }
+    return json({servers:rows.results||[]});
+  }
+  if(path==="community/servers" && request.method==="POST"){
+    const body=await request.json().catch(()=>null),name=String(body?.name||"").trim();
+    if(name.length<2||name.length>60) return fail("El nombre debe tener entre 2 y 60 caracteres.");
+    const id=crypto.randomUUID(),channelId=crypto.randomUUID(),now=Date.now();
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO guilds (id,name,owner_id,created_at) VALUES (?,?,?,?)").bind(id,name,user.id,now),
+      env.DB.prepare("INSERT INTO guild_members (guild_id,user_id,role,joined_at) VALUES (?,?,?,?)").bind(id,user.id,"owner",now),
+      env.DB.prepare("INSERT INTO chat_channels (id,guild_id,name,channel_type,position,created_at) VALUES (?,?,?,?,?,?)").bind(channelId,id,"general","text",0,now)
+    ]);
+    return json({server:{id,name,role:"owner"},channel:{id:channelId,name:"general"}},201);
+  }
+  const serverMatch=/^community\/servers\/([^/]+)\/channels$/.exec(path);
+  if(serverMatch && request.method==="GET"){
+    const member=await env.DB.prepare("SELECT role FROM guild_members WHERE guild_id=? AND user_id=?").bind(serverMatch[1],user.id).first();
+    if(!member) return fail("No tienes acceso a este servidor.",403);
+    const rows=await env.DB.prepare("SELECT id,name,channel_type,position FROM chat_channels WHERE guild_id=? ORDER BY position,created_at").bind(serverMatch[1]).all();
+    return json({channels:rows.results||[],role:member.role});
+  }
+  if(serverMatch && request.method==="POST"){
+    const member=await env.DB.prepare("SELECT role FROM guild_members WHERE guild_id=? AND user_id=?").bind(serverMatch[1],user.id).first();
+    if(!member || !["owner","admin"].includes(member.role)) return fail("Solo el propietario o un administrador puede crear canales.",403);
+    const body=await request.json().catch(()=>null),name=String(body?.name||"").trim().toLowerCase().replace(/[^a-z0-9áéíóúñ_-]/gi,"-").slice(0,40);
+    if(name.length<2) return fail("El nombre del canal debe tener al menos 2 caracteres.");
+    const id=crypto.randomUUID(),now=Date.now();
+    await env.DB.prepare("INSERT INTO chat_channels (id,guild_id,name,channel_type,position,created_at) VALUES (?,?,?,?,?,?)").bind(id,serverMatch[1],name,"text",Date.now(),now).run();
+    return json({channel:{id,name,channel_type:"text"}},201);
+  }
+  const messagesMatch=/^community\/channels\/([^/]+)\/messages$/.exec(path);
+  if(messagesMatch && request.method==="GET"){
+    const channel=await env.DB.prepare("SELECT c.id,c.guild_id FROM chat_channels c JOIN guild_members m ON m.guild_id=c.guild_id WHERE c.id=? AND m.user_id=?").bind(messagesMatch[1],user.id).first();
+    if(!channel) return fail("Canal no encontrado o sin acceso.",404);
+    const after=Number(new URL(request.url).searchParams.get("after")||0);
+    const rows=await env.DB.prepare("SELECT msg.id,msg.body,msg.created_at,u.id AS user_id,u.display_name AS author FROM messages msg JOIN users u ON u.id=msg.user_id WHERE msg.channel_id=? AND msg.created_at>? ORDER BY msg.created_at DESC LIMIT 100").bind(channel.id,after).all();
+    return json({messages:(rows.results||[]).reverse()});
+  }
+  if(messagesMatch && request.method==="POST"){
+    const channel=await env.DB.prepare("SELECT c.id FROM chat_channels c JOIN guild_members m ON m.guild_id=c.guild_id WHERE c.id=? AND m.user_id=?").bind(messagesMatch[1],user.id).first();
+    if(!channel) return fail("Canal no encontrado o sin acceso.",404);
+    const body=await request.json().catch(()=>null),message=String(body?.body||"").trim();
+    if(!message||message.length>2000) return fail("El mensaje debe tener entre 1 y 2000 caracteres.");
+    const id=crypto.randomUUID(),now=Date.now();
+    await env.DB.prepare("INSERT INTO messages (id,channel_id,user_id,body,created_at) VALUES (?,?,?,?,?)").bind(id,channel.id,user.id,message,now).run();
+    return json({message:{id,body:message,created_at:now,user_id:user.id,author:user.display_name}},201);
+  }
+  return null;
+}
+
 export async function onRequest(context){
   const {request,env}=context,url=new URL(request.url);
   if(!url.pathname.startsWith("/api/")) return new Response("Not found",{status:404});
@@ -177,9 +241,10 @@ export async function onRequest(context){
     const auth=await authRoutes(request,env,path); if(auth) return auth;
     const videos=await videoRoutes(request,env,path); if(videos) return videos;
     const channels=await channelRoutes(request,env,path); if(channels) return channels;
+    const community=await communityRoutes(request,env,path); if(community) return community;
     return fail("Ruta no encontrada.",404);
   }catch(error){
     console.error("API error",error);
-    return fail("Error interno. Revisa que las vinculaciones D1 y R2 estén configuradas.",500);
+    return fail("Error interno. Comprueba la configuración de la base de datos D1.",500);
   }
 }
